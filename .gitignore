@@ -1,0 +1,7 @@
+private/
+*.key
+.dev.vars
+.env*
+.wrangler/
+dist/
+.DS_Store

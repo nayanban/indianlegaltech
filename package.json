@@ -1,0 +1,11 @@
+{
+  "name": "indianlegaltech",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "serve": "python3 -m http.server 8080 --directory public",
+    "build:sites-api": "node scripts/build-sites-api.mjs"
+  }
+}

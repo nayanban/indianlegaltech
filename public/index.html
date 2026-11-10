@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#f6f4ef" />
+    <title>Advisory Note Explorer</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="topbar">
+        <a class="wordmark" href="./" aria-label="Advisory Note Explorer home">
+          <span class="mark" aria-hidden="true">N</span>
+          <span>Note Explorer</span>
+        </a>
+        <span class="topbar-label">Private advisory material</span>
+      </header>
+
+      <main>
+        <section id="lock-view" class="lock-layout">
+          <div class="intro-copy">
+            <p class="eyebrow">Question-led reading</p>
+            <h1>Find the answer.<br /><em>See the evidence.</em></h1>
+            <p class="intro-text">Ask about a private advisory note and get an answer tied to its text. When the note cannot answer, the explorer will explain the gap and suggest what to research next.</p>
+            <div class="principles">
+              <div><span class="principle-number">01</span><span>Source passages shown beside every supported answer</span></div>
+              <div><span class="principle-number">02</span><span>Preliminary ideas distinguished from market notes</span></div>
+              <div><span class="principle-number">03</span><span>Clear limitations and next research questions</span></div>
+            </div>
+          </div>
+          <form id="unlock-form" class="unlock-card">
+            <div class="card-kicker"><span class="lock-icon" aria-hidden="true">✳</span> Restricted access</div>
+            <h2>Unlock the note</h2>
+            <p>Enter the shared passphrase provided by the note owner. It is used only for this session.</p>
+            <label for="passphrase">Passphrase</label>
+            <input id="passphrase" type="password" autocomplete="off" required minlength="20" placeholder="Enter passphrase" />
+            <button id="unlock-button" class="primary-button" type="submit">Open explorer <span aria-hidden="true">↗</span></button>
+            <p id="unlock-error" class="form-error" role="alert" hidden></p>
+            <p class="privacy-note">The note is encrypted at rest. Answers are generated through an AI service when you ask a question.</p>
+          </form>
+        </section>
+
+        <section id="explorer-view" class="explorer" hidden>
+          <div class="explorer-heading">
+            <div>
+              <p class="eyebrow">Source-backed inquiry</p>
+              <h1 id="note-title">Advisory note</h1>
+              <p class="heading-description">Ask any question. Answers reflect what the note says, including where it is incomplete or preliminary.</p>
+            </div>
+            <button id="lock-button" class="text-button" type="button">Lock note <span aria-hidden="true">↗</span></button>
+          </div>
+          <div class="explorer-grid">
+            <div class="question-column">
+              <form id="question-form" class="question-card">
+                <label for="question">Your question</label>
+                <textarea id="question" rows="4" maxlength="1000" placeholder="What does the note establish about…?" required></textarea>
+                <div class="question-actions">
+                  <span>Answers use this note only</span>
+                  <button id="ask-button" class="primary-button" type="submit">Ask the note <span aria-hidden="true">↗</span></button>
+                </div>
+              </form>
+              <div class="suggestions">
+                <h2>Questions to start with</h2>
+                <div id="suggested-questions" class="suggestion-list"></div>
+              </div>
+            </div>
+            <div id="answer-panel" class="answer-panel" aria-live="polite">
+              <div id="empty-state" class="empty-state">
+                <span class="empty-symbol" aria-hidden="true">↳</span>
+                <h2>Start with a question</h2>
+                <p>The answer will appear here with the note passages it relies on, its limits, and useful follow-up research.</p>
+              </div>
+              <div id="loading-state" class="loading-state" hidden>
+                <span class="loading-mark" aria-hidden="true"></span>
+                <p>Reading the note and checking the answer…</p>
+              </div>
+              <p id="answer-error" class="answer-error" role="alert" hidden></p>
+              <article id="answer-content" hidden>
+                <div class="answer-header"><span id="status-badge" class="status-badge"></span><span id="evidence-type" class="evidence-type"></span></div>
+                <h2>Answer</h2>
+                <p id="answer-text" class="answer-text"></p>
+                <section class="answer-section" id="limitations-section">
+                  <h3>What this answer cannot establish</h3>
+                  <p id="limitations-text"></p>
+                </section>
+                <section class="answer-section" id="research-section">
+                  <h3>Questions to research next</h3>
+                  <ol id="research-list"></ol>
+                </section>
+                <section class="answer-section" id="evidence-section">
+                  <h3>Passages from the note</h3>
+                  <div id="evidence-list"></div>
+                </section>
+              </article>
+            </div>
+          </div>
+          <p class="disclaimer">This explorer describes the note; it does not independently verify current market claims or provide legal advice. Review cited passages before relying on an answer.</p>
+        </section>
+      </main>
+      <footer class="footer"><span>Advisory Note Explorer</span><span>Evidence first · uncertainty explicit</span></footer>
+    </div>
+    <script src="./config.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
