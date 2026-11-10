@@ -46,11 +46,12 @@ def main():
         "schema": 1,
         "title": "India legal market note",
         "suggested_questions": [
-            "How large is the addressable market?",
-            "Which customer segment might be approached first?",
-            "What does the note say about pricing?",
-            "Which partnership ideas need validation?",
-            "What evidence is missing for a product-market-fit decision?",
+            "How does the note describe where high-value corporate legal work is concentrated in India?",
+            "Which sources does the note identify for finding higher-value corporate law firms?",
+            "How does the note suggest identifying higher-value litigation practices?",
+            "What payment and contracting patterns does the note describe for Indian B2B software buyers?",
+            "What court-operations problem does the note identify as a priority for litigators?",
+            "Who influences legal-tech buying decisions for in-house teams, according to the note?",
         ],
         "paragraphs": paragraphs,
     }
