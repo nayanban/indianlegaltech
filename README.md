@@ -1,8 +1,26 @@
-# Advisory Note Explorer
+# India Legal Market Note Explorer
 
-A private advisory note, accessible through a question-led GitHub Pages interface. Visitors can ask free-form questions and receive answers that cite the note, identify what it cannot establish, and suggest specific follow-up research.
+**[Visit the project site](https://nayanban.github.io/indianlegaltech/)** · **[Read how I built it](HOW_IT_WAS_BUILT.md)**
 
-The site is **not an FAQ**. Each question is matched locally to a bounded set of likely relevant passages. The question and those passages are sent to an AI model, which generates an answer for that question. The API accepts citations only to the passages actually sent. This reduces unsupported answers but does not make them impossible; readers should check the displayed passages.
+![India Legal Market Note Explorer title card](public/social-preview.png)
+
+I prepared an India legal market note as an advisor for a company. This project turns the private note into a question-led interface: authorized readers can ask in their own words, inspect the passages behind an answer, see what the note cannot establish, and identify what to research next.
+
+**Current status:** The GitHub Pages interface and encrypted note are published. The AI answer service is not connected yet, so the private explorer is unavailable. GPT-6 Luna has been selected for a later, small prepaid pilot; no API key is configured in this repository.
+
+## Why this exists
+
+An advisory note can contain useful context while leaving some questions open. A quick answer is only useful if the reader can see its basis and distinguish what the note says from what still needs verification.
+
+I authored the source note and defined the product requirements: free-form questions, visible source passages, explicit uncertainty, and concrete follow-up research questions. I used AI-assisted development to implement and test the interface and answer service. The [build account](HOW_IT_WAS_BUILT.md) explains the decisions and their limits.
+
+## Intended reader experience
+
+1. An authorized reader enters the shared passphrase and asks a question in their own words.
+2. The service selects a bounded set of likely relevant passages and sends them with the question to an AI model.
+3. The answer distinguishes supported, partial, and unsupported responses. It shows cited passages, limitations, and research questions where needed.
+
+This is not a fixed FAQ. Citation IDs are checked against the passages actually sent to the model, but readers should still inspect whether the passages support the answer. The interface describes the note; it does not independently verify current market claims or provide legal advice. There is no public demonstration of the private note or its answers.
 
 ## Architecture
 
@@ -34,16 +52,17 @@ The opening preliminary analysis is tagged separately from the later market note
 | `scripts/encrypt.mjs` | Encrypts that private JSON for publication |
 | `scripts/verify-private.mjs` | Confirms the encrypted file matches the private source |
 | `tests/` | Tests for decryption, access checks, and evidence validation |
+| `HOW_IT_WAS_BUILT.md` | Product and implementation case study |
 
 ## Deployment
 
 1. Enable GitHub Pages for this repository with **GitHub Actions** as its source. `.github/workflows/pages.yml` publishes `public/` on pushes to `main`.
-2. Build the Sites API with `npm run build:sites-api`. The Sites project ID is in `.openai/hosting.json`; its source is `worker/worker.mjs`. Set its runtime environment values to `ALLOWED_ORIGIN=https://nayanban.github.io`, `NOTE_URL=https://nayanban.github.io/indianlegaltech/note.enc.json`, and `OPENAI_MODEL=gpt-5-mini`.
+2. Build the Sites API with `npm run build:sites-api`. The Sites project ID is in `.openai/hosting.json`; its source is `worker/worker.mjs`. When activating answers, set its runtime environment values to `ALLOWED_ORIGIN=https://nayanban.github.io`, `NOTE_URL=https://nayanban.github.io/indianlegaltech/note.enc.json`, and `OPENAI_MODEL=gpt-6-luna`.
 3. Configure the Sites runtime secret `OPENAI_API_KEY` through the OpenAI Developers integration. Never add it to this repository or `public/config.js`. Publish the Sites API and allow visitors with the public URL to reach it; the shared passphrase still controls access to the note.
 4. Put the deployed Sites API URL in `public/config.js` as `apiBaseUrl`, then push that change so GitHub Pages receives it.
 5. Give the passphrase to authorized readers through a separate channel. It is not stored in the site, browser storage, or the repository.
 
-The service needs an OpenAI API account with billing enabled. Model usage incurs a charge per question. Set an API spend limit and, if traffic grows, add API rate limiting. GitHub Pages hosts the static interface without an application server.
+The service needs an OpenAI API account with billing enabled. Model usage incurs a charge per question. Set an API spend limit and, if traffic grows, add API rate limiting. GitHub Pages hosts the static interface without an application server. The answer service remains unconnected while the API setup is tabled.
 
 ## Updating the note
 

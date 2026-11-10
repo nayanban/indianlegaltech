@@ -5,42 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#f6f4ef" />
-    <title>Advisory Note Explorer</title>
+    <meta name="description" content="An evidence-led interface for a private India legal market advisory note, prepared by Nayan Banerjee. Explore the design, source code, and approach to uncertainty." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="India Legal Market Note Explorer" />
+    <meta property="og:description" content="A private advisory note made easier to question, with cited evidence, clear limits, and research follow-ups." />
+    <meta property="og:url" content="https://nayanban.github.io/indianlegaltech/" />
+    <meta property="og:image" content="https://nayanban.github.io/indianlegaltech/social-preview.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>India Legal Market Note Explorer · Nayan Banerjee</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="site-shell">
       <header class="topbar">
-        <a class="wordmark" href="./" aria-label="Advisory Note Explorer home">
+        <a class="wordmark" href="./" aria-label="India Legal Market Note Explorer home">
           <span class="mark" aria-hidden="true">N</span>
-          <span>Note Explorer</span>
+          <span>India Legal Market <span class="wordmark-light">/ Note Explorer</span></span>
         </a>
-        <span class="topbar-label">Private advisory material</span>
+        <nav class="topbar-links" aria-label="Project links">
+          <a href="#approach">The approach</a>
+          <a href="https://github.com/nayanban/indianlegaltech">GitHub ↗</a>
+        </nav>
       </header>
 
       <main>
         <section id="lock-view" class="lock-layout">
           <div class="intro-copy">
-            <p class="eyebrow">Question-led reading</p>
-            <h1>Find the answer.<br /><em>See the evidence.</em></h1>
-            <p class="intro-text">Ask about a private advisory note and get an answer tied to its text. When the note cannot answer, the explorer will explain the gap and suggest what to research next.</p>
+            <p class="eyebrow">India legal market · advisory interface</p>
+            <h1>Ask the note.<br /><em>Trace the answer.</em></h1>
+            <p class="intro-text">I prepared an India legal market note for a company. This private tool is designed to let authorized readers ask their own questions, inspect the supporting text, and see what still needs to be researched.</p>
             <div class="principles">
               <div><span class="principle-number">01</span><span>Source passages shown beside every supported answer</span></div>
               <div><span class="principle-number">02</span><span>Preliminary ideas distinguished from market notes</span></div>
               <div><span class="principle-number">03</span><span>Clear limitations and next research questions</span></div>
             </div>
+            <p class="hero-credit">An advisory project by <a href="https://www.linkedin.com/in/banerjee-nayan/">Nayan Banerjee ↗</a></p>
           </div>
           <form id="unlock-form" class="unlock-card">
             <div class="card-kicker"><span class="lock-icon" aria-hidden="true">✳</span> Restricted access</div>
-            <h2>Unlock the note</h2>
-            <p>Enter the shared passphrase provided by the note owner. It is used only for this session.</p>
+            <h2 id="access-title">For authorized readers</h2>
+            <p id="access-description">Enter the shared passphrase provided by the note owner. It is used only for this session.</p>
             <label for="passphrase">Passphrase</label>
             <input id="passphrase" type="password" autocomplete="off" required minlength="20" placeholder="Enter passphrase" />
             <button id="unlock-button" class="primary-button" type="submit">Open explorer <span aria-hidden="true">↗</span></button>
-            <p id="service-status" class="setup-status" role="status" hidden>Live answers are being connected. Please check back soon.</p>
+            <p id="service-status" class="setup-status" role="status" hidden>The answer service is not connected yet. The project overview and code are available below.</p>
             <p id="unlock-error" class="form-error" role="alert" hidden></p>
-            <p class="privacy-note">The note is encrypted at rest. Answers are generated through an AI service when you ask a question.</p>
+            <p class="privacy-note">The note is encrypted. When the service is active, questions and selected passages are sent to an AI model; the passphrase stays with the answer service.</p>
           </form>
+        </section>
+
+        <section id="approach" class="project-overview" aria-labelledby="overview-title">
+          <div class="overview-heading">
+            <p class="eyebrow">The project</p>
+            <h2 id="overview-title">Make the note useful at the moment a question arises.</h2>
+          </div>
+          <div class="overview-grid">
+            <div class="overview-story">
+              <h3>The problem</h3>
+              <p>An advisory note is valuable, but a reader may need an answer to one specific question. Finding the relevant passage and deciding whether it is conclusive takes time.</p>
+              <h3>My role</h3>
+              <p>I prepared the source note and set the requirements for an interface that keeps answers tied to it. The tool is built to make uncertainty visible rather than smooth it over.</p>
+            </div>
+            <div class="overview-method">
+              <h3>How an answer is handled</h3>
+              <ol>
+                <li><strong>Find relevant passages.</strong><span>The service selects a bounded set of paragraphs from the private note.</span></li>
+                <li><strong>Answer from the source.</strong><span>The response cites passages and labels preliminary material.</span></li>
+                <li><strong>Show the boundary.</strong><span>It states what the note cannot establish and suggests further research questions.</span></li>
+              </ol>
+              <p class="method-note">The tool describes the note. It does not independently verify current market facts or provide legal advice.</p>
+            </div>
+          </div>
+          <div class="overview-links">
+            <a class="overview-primary" href="https://github.com/nayanban/indianlegaltech/blob/main/HOW_IT_WAS_BUILT.md">Read how I built it <span aria-hidden="true">↗</span></a>
+            <a href="https://github.com/nayanban/indianlegaltech">Explore the repository <span aria-hidden="true">↗</span></a>
+          </div>
         </section>
 
         <section id="explorer-view" class="explorer" hidden>
@@ -100,7 +142,7 @@
           <p class="disclaimer">This explorer describes the note; it does not independently verify current market claims or provide legal advice. Review cited passages before relying on an answer.</p>
         </section>
       </main>
-      <footer class="footer"><span>Advisory Note Explorer</span><span>Evidence first · uncertainty explicit</span></footer>
+      <footer class="footer"><span>© 2026 Nayan Banerjee</span><span>Private note · public methodology</span><a href="https://www.linkedin.com/in/banerjee-nayan/">LinkedIn ↗</a></footer>
     </div>
     <script src="./config.js"></script>
     <script type="module" src="./app.js"></script>

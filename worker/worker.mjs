@@ -1,4 +1,4 @@
-const DEFAULT_MODEL = 'gpt-5-mini';
+const DEFAULT_MODEL = 'gpt-6-luna';
 const MAX_QUESTION_LENGTH = 1000;
 const NOTE_CACHE_MS = 5 * 60 * 1000;
 const MAX_PASSAGES = 16;

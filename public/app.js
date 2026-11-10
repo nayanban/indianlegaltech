@@ -81,6 +81,11 @@ const askButton = $('#ask-button');
 unlockButton.dataset.label = unlockButton.textContent;
 askButton.dataset.label = askButton.textContent;
 if (!apiBaseUrl) {
+  $('#access-title').textContent = 'Private access is being prepared';
+  $('#access-description').textContent = 'The note and its answers are reserved for authorized readers.';
+  $('#unlock-form label').hidden = true;
+  $('#passphrase').hidden = true;
+  unlockButton.hidden = true;
   $('#passphrase').disabled = true;
   unlockButton.disabled = true;
   $('#service-status').hidden = false;
