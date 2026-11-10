@@ -2,7 +2,7 @@
 
 A private advisory note, accessible through a question-led GitHub Pages interface. Visitors can ask free-form questions and receive answers that cite the note, identify what it cannot establish, and suggest specific follow-up research.
 
-The site is **not an FAQ**. Each question is sent to an AI model together with the note, and the answer is generated for that question. The model is instructed to use only the note, and the API checks that every cited passage exists. This reduces unsupported answers but does not make them impossible; readers should check the displayed passages.
+The site is **not an FAQ**. Each question is matched locally to a bounded set of likely relevant passages. The question and those passages are sent to an AI model, which generates an answer for that question. The API accepts citations only to the passages actually sent. This reduces unsupported answers but does not make them impossible; readers should check the displayed passages.
 
 ## Architecture
 
@@ -10,8 +10,8 @@ The site is **not an FAQ**. Each question is sent to an AI model together with t
 GitHub Pages (public interface + encrypted note)
         │ question + shared passphrase
         ▼
-Sites serverless API (decrypts note in memory; keeps API key private)
-        │ question + note text (no passphrase)
+Sites serverless API (decrypts note and selects passages in memory; keeps API key private)
+        │ question + selected passages (no passphrase)
         ▼
 OpenAI Responses API
         │ structured answer
@@ -60,7 +60,8 @@ Only commit the changed `public/note.enc.json`. `private/` is ignored by Git. To
 
 ## Limits
 
-- The note is decrypted in the Sites API for each authorized question and sent to OpenAI for that answer. The passphrase is **not** sent to OpenAI. The request sets `store: false`; see [OpenAI's API data controls](https://developers.openai.com/api/docs/guides/your-data) for applicable retention details.
+- The note is decrypted in the Sites API for each authorized question. Only selected passages and the question are sent to OpenAI for that answer. The passphrase is **not** sent to OpenAI. The request sets `store: false`; see [OpenAI's API data controls](https://developers.openai.com/api/docs/guides/your-data) for applicable retention details.
+- Passage selection uses keyword matching. It may miss relevant sections when a viewer uses different terminology; answers say that other passages may not have been selected. A viewer can rephrase the question or inspect the original note if certainty matters.
 - Answers are restricted to the source note. They do not search the web or confirm whether time-sensitive claims remain true.
 - The API checks that citation IDs exist, but a reader should still inspect the quoted passages to decide whether they support the answer.
 - A shared passphrase cannot identify individual viewers. If individual access control becomes necessary, add authenticated accounts and move the note behind that service.

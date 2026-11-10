@@ -38,7 +38,7 @@ function renderSuggestions(questions) {
 }
 
 function renderAnswer(data) {
-  const labels = { answered: 'Answered from the note', partial: 'Partially answered', unavailable: 'Not established by the note' };
+  const labels = { answered: 'Answered from the note', partial: 'Partially answered', unavailable: 'No supported answer found' };
   const evidenceLabels = { preliminary_analysis: 'Preliminary analysis', market_note: 'Market notes', mixed: 'Mixed evidence', none: 'No supporting passage' };
   const badge = $('#status-badge');
   badge.textContent = labels[data.status] || labels.unavailable;
@@ -80,6 +80,11 @@ const unlockButton = $('#unlock-button');
 const askButton = $('#ask-button');
 unlockButton.dataset.label = unlockButton.textContent;
 askButton.dataset.label = askButton.textContent;
+if (!apiBaseUrl) {
+  $('#passphrase').disabled = true;
+  unlockButton.disabled = true;
+  $('#service-status').hidden = false;
+}
 
 $('#unlock-form').addEventListener('submit', async event => {
   event.preventDefault();

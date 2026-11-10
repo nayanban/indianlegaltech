@@ -1,13 +1,16 @@
 import assert from 'node:assert/strict';
 import { createCipheriv, pbkdf2Sync, randomBytes, webcrypto } from 'node:crypto';
 import test from 'node:test';
-import worker, { decryptNote, validateAnswer } from '../worker/worker.mjs';
+import worker, { decryptNote, selectPassages, validateAnswer } from '../worker/worker.mjs';
 
 globalThis.crypto ||= webcrypto;
 const passphrase = 'this-is-only-a-test-passphrase';
 const sampleNote = {
   schema: 1, title: 'Sample advisory note', suggested_questions: ['What is proposed?'],
-  paragraphs: [{ id: 'p1', section: 'Preliminary analysis', kind: 'preliminary', text: 'A pilot is proposed but has not been run.' }],
+  paragraphs: [
+    { id: 'p1', section: 'Preliminary analysis', kind: 'preliminary', text: 'A pilot is proposed but has not been run.' },
+    { id: 'p2', section: 'Separate subject', kind: 'market_note', text: 'Confidential pricing material is unrelated to this question.' },
+  ],
 };
 const salt = randomBytes(16);
 const iv = randomBytes(12);
@@ -23,7 +26,7 @@ const env = { NOTE_URL: 'https://example.test/note.enc.json', ALLOWED_ORIGIN: or
 test('encrypted note decrypts and rejects the wrong passphrase', async () => {
   const note = await decryptNote(bundle, passphrase);
   assert.equal(note.schema, 1);
-  assert.equal(note.paragraphs.length, 1);
+  assert.equal(note.paragraphs.length, 2);
   await assert.rejects(() => decryptNote(bundle, 'a-completely-wrong-passphrase'));
 });
 
@@ -32,11 +35,22 @@ test('unsupported citations are removed and the answer is downgraded', async () 
   const answer = validateAnswer({
     status: 'answered', answer: 'An invented answer', citations: ['invented'],
     limitations: '', research_questions: [],
-  }, note, 'What is missing?');
+  }, note.paragraphs, 'What is missing?');
   assert.equal(answer.status, 'unavailable');
   assert.equal(answer.answer, 'The note does not establish an answer to this question.');
   assert.equal(answer.evidence.length, 0);
   assert.equal(answer.research_questions.length, 1);
+});
+
+test('passage selection excludes unrelated material and citations to it', () => {
+  const selected = selectPassages(sampleNote, 'Which pilot is proposed?');
+  assert.deepEqual(selected.map(p => p.id), ['p1']);
+  const answer = validateAnswer({
+    status: 'answered', answer: 'A pilot is proposed.', citations: ['p2'],
+    limitations: 'No results are supplied.', research_questions: ['What did the pilot show?'],
+  }, selected, 'Which pilot is proposed?');
+  assert.equal(answer.status, 'unavailable');
+  assert.equal(answer.evidence.length, 0);
 });
 
 test('unlock and ask enforce the passphrase and return checked evidence', async () => {
@@ -69,7 +83,7 @@ test('unlock and ask enforce the passphrase and return checked evidence', async 
 
     const response = await worker.fetch(new Request('https://api.test/ask', {
       method: 'POST', headers: { origin, 'content-type': 'application/json' },
-      body: JSON.stringify({ passphrase, question: 'Which segment first?' }),
+      body: JSON.stringify({ passphrase, question: 'Which pilot is proposed?' }),
     }), env);
     assert.equal(response.status, 200);
     const answer = await response.json();
@@ -77,7 +91,8 @@ test('unlock and ask enforce the passphrase and return checked evidence', async 
     assert.equal(answer.evidence_type, 'preliminary_analysis');
     assert.deepEqual(answer.evidence.map(item => item.id), ['p1']);
     assert.equal(modelRequest.store, false);
-    assert.match(modelRequest.input, /SOURCE NOTE/);
+    assert.match(modelRequest.input, /SELECTED SOURCE PASSAGES/);
+    assert.equal(modelRequest.input.includes('Confidential pricing material'), false);
     assert.equal(modelRequest.input.includes(passphrase), false);
   } finally {
     globalThis.fetch = priorFetch;
