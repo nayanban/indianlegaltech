@@ -16,7 +16,7 @@ The interface allows free-form questions; it is not a fixed FAQ. The answer serv
 
 ## Protecting the source material
 
-The repository is public so the interface and implementation can be inspected. The advisory note is private. I chose a split design: GitHub Pages hosts the interface and an encrypted copy of the note, while a serverless service decrypts it in memory after an authorized reader supplies the shared passphrase. The plaintext note, passphrase, and eventual API key are absent from the repository.
+The repository is public so the interface and implementation can be inspected. The advisory note is private. I chose a split design: GitHub Pages hosts the interface and an encrypted copy of the note. The browser derives a note key from an authorized reader's shared passphrase, and a serverless service uses that key to decrypt its encrypted copy in memory. The original 600,000-iteration password derivation stays in the browser because the hosting runtime limits server-side derivation. The plaintext note, passphrase, and API key are absent from the repository.
 
 The passphrase is a practical access method for a small group. It also has a clear limit: everyone with the passphrase has the same access, and an individual reader cannot be revoked without replacing the passphrase and re-encrypting the note. The public page therefore explains the project without revealing the note or offering a sample answer from it.
 
@@ -30,11 +30,11 @@ The retrieval method is deliberately simple: keyword matching chooses a bounded 
 
 I authored the advisory note and set the product direction: question-led access, source-backed answers, visible uncertainty, and private source material. I used Codex for code generation and implementation, then reviewed the behavior and constraints against that brief. The project demonstrates how I translated an advisory standard into an interface, with AI assisting the build rather than serving as the source of the underlying market judgment.
 
-The repository includes tests for decryption, access checks, and evidence validation. The GitHub Pages workflow runs those tests before publishing the static interface. The live AI answer experience still needs an API key and a pilot with real questions; it is not currently available. GPT-6 Luna has been selected for that later pilot with a small prepaid balance.
+The repository includes tests for decryption, access checks, and evidence validation. The GitHub Pages workflow runs those tests before publishing the static interface. The live answer service uses GPT-6 Luna with a privately configured API key and a small prepaid balance. An initial end-to-end check returned a partial answer with cited passages, limitations, and research questions; an unrelated question was marked unavailable.
 
 ## What I would test next
 
-Once the answer service is connected, I would test questions that the note can answer, questions it can only partly answer, and questions outside its scope. The important review is whether the cited passage actually supports the wording of the answer, whether preliminary material is labelled correctly, and whether the proposed research questions identify a useful next step. Those checks matter more than making every response sound complete.
+In a broader reader pilot, I would test questions that the note can answer, questions it can only partly answer, and questions outside its scope. The important review is whether each cited passage actually supports the wording of the answer, whether preliminary material is labelled correctly, and whether the proposed research questions identify a useful next step. Those checks matter more than making every response sound complete.
 
 ---
 

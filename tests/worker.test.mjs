@@ -14,7 +14,8 @@ const sampleNote = {
 };
 const salt = randomBytes(16);
 const iv = randomBytes(12);
-const cipher = createCipheriv('aes-256-gcm', pbkdf2Sync(passphrase, salt, 600_000, 32, 'sha256'), iv);
+const noteKey = pbkdf2Sync(passphrase, salt, 600_000, 32, 'sha256');
+const cipher = createCipheriv('aes-256-gcm', noteKey, iv);
 const ciphertext = Buffer.concat([cipher.update(JSON.stringify(sampleNote)), cipher.final(), cipher.getAuthTag()]);
 const bundle = {
   version: 1, kdf: 'PBKDF2-SHA256', cipher: 'AES-256-GCM', iterations: 600_000,
@@ -70,20 +71,20 @@ test('unlock and ask enforce the passphrase and return checked evidence', async 
   try {
     const bad = await worker.fetch(new Request('https://api.test/unlock', {
       method: 'POST', headers: { origin, 'content-type': 'application/json' },
-      body: JSON.stringify({ passphrase: 'a-completely-wrong-passphrase' }),
+      body: JSON.stringify({ note_key: randomBytes(32).toString('base64') }),
     }), env);
     assert.equal(bad.status, 401);
 
     const unlocked = await worker.fetch(new Request('https://api.test/unlock', {
       method: 'POST', headers: { origin, 'content-type': 'application/json' },
-      body: JSON.stringify({ passphrase }),
+      body: JSON.stringify({ note_key: noteKey.toString('base64') }),
     }), env);
     assert.equal(unlocked.status, 200);
     assert.equal((await unlocked.json()).suggested_questions.length, 1);
 
     const response = await worker.fetch(new Request('https://api.test/ask', {
       method: 'POST', headers: { origin, 'content-type': 'application/json' },
-      body: JSON.stringify({ passphrase, question: 'Which pilot is proposed?' }),
+      body: JSON.stringify({ note_key: noteKey.toString('base64'), question: 'Which pilot is proposed?' }),
     }), env);
     assert.equal(response.status, 200);
     const answer = await response.json();
@@ -94,6 +95,7 @@ test('unlock and ask enforce the passphrase and return checked evidence', async 
     assert.match(modelRequest.input, /SELECTED SOURCE PASSAGES/);
     assert.equal(modelRequest.input.includes('Confidential pricing material'), false);
     assert.equal(modelRequest.input.includes(passphrase), false);
+    assert.equal(modelRequest.input.includes(noteKey.toString('base64')), false);
   } finally {
     globalThis.fetch = priorFetch;
   }

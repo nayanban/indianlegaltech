@@ -43,12 +43,20 @@ async function decryptNote(bundle, passphrase) {
     throw new Error('Unsupported note format');
   }
   const passwordKey = await crypto.subtle.importKey(
-    'raw', new TextEncoder().encode(passphrase), 'PBKDF2', false, ['deriveKey'],
+    'raw', new TextEncoder().encode(passphrase), 'PBKDF2', false, ['deriveBits'],
   );
-  const key = await crypto.subtle.deriveKey(
+  const bits = await crypto.subtle.deriveBits(
     { name: 'PBKDF2', hash: 'SHA-256', salt: base64Bytes(bundle.salt), iterations: bundle.iterations },
-    passwordKey, { name: 'AES-GCM', length: 256 }, false, ['decrypt'],
+    passwordKey, 256,
   );
+  return decryptNoteWithKey(bundle, bits);
+}
+
+async function decryptNoteWithKey(bundle, noteKey) {
+  if (bundle.version !== 1 || bundle.kdf !== 'PBKDF2-SHA256' || bundle.cipher !== 'AES-256-GCM') {
+    throw new Error('Unsupported note format');
+  }
+  const key = await crypto.subtle.importKey('raw', noteKey, 'AES-GCM', false, ['decrypt']);
   const plaintext = await crypto.subtle.decrypt(
     { name: 'AES-GCM', iv: base64Bytes(bundle.iv) }, key, base64Bytes(bundle.ciphertext),
   );
@@ -58,6 +66,7 @@ async function decryptNote(bundle, passphrase) {
 }
 
 async function loadEncryptedNote(env) {
+  if (typeof EMBEDDED_ENCRYPTED_NOTE !== 'undefined') return EMBEDDED_ENCRYPTED_NOTE;
   const now = Date.now();
   if (cachedEncryptedNote && now - cachedAt < NOTE_CACHE_MS) return cachedEncryptedNote;
   const response = await fetch(env.NOTE_URL, { cf: { cacheTtl: 300 } });
@@ -189,7 +198,9 @@ export default {
   async fetch(request, env) {
     const origin = request.headers.get('origin') || '';
     const allowed = env.ALLOWED_ORIGIN || '';
-    if (!allowed || !env.NOTE_URL) return json({ error: 'Service is not configured' }, 503, allowed || 'null');
+    if (!allowed || (!env.NOTE_URL && typeof EMBEDDED_ENCRYPTED_NOTE === 'undefined')) {
+      return json({ error: 'Service is not configured' }, 503, allowed || 'null');
+    }
     if (origin !== allowed) return json({ error: 'Origin not allowed' }, 403, allowed);
     if (request.method === 'OPTIONS') return json({}, 200, allowed);
     const path = new URL(request.url).pathname;
@@ -207,9 +218,9 @@ export default {
     } catch {
       return json({ error: 'Invalid JSON' }, 400, allowed);
     }
-    const passphrase = body?.passphrase;
-    if (typeof passphrase !== 'string' || passphrase.length < 20 || passphrase.length > 200) {
-      return json({ error: 'Invalid passphrase' }, 400, allowed);
+    const noteKey = body?.note_key;
+    if (typeof noteKey !== 'string' || !/^[A-Za-z0-9+/]{43}=$/.test(noteKey)) {
+      return json({ error: 'Invalid note key' }, 400, allowed);
     }
     const question = body?.question;
     if (path === '/ask' && (typeof question !== 'string' || !question.trim() || question.length > MAX_QUESTION_LENGTH)) {
@@ -218,9 +229,10 @@ export default {
 
     let note;
     try {
-      note = await decryptNote(await loadEncryptedNote(env), passphrase);
+      note = await decryptNoteWithKey(await loadEncryptedNote(env), base64Bytes(noteKey));
     } catch (error) {
       if (error.name === 'OperationError') return json({ error: 'Incorrect passphrase' }, 401, allowed);
+      console.error('Note loading or decryption failed', error.name, error.message);
       return json({ error: 'The note is unavailable' }, 503, allowed);
     }
     if (path === '/unlock') {

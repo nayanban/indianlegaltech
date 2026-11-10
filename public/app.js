@@ -1,6 +1,6 @@
 const $ = selector => document.querySelector(selector);
 const apiBaseUrl = (window.APP_CONFIG?.apiBaseUrl || '').replace(/\/$/, '');
-let sessionPassphrase = '';
+let sessionNoteKey = '';
 
 function setBusy(button, busy, label) {
   button.disabled = busy;
@@ -18,6 +18,24 @@ async function api(path, body) {
   const result = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(result.error || 'The service is unavailable.');
   return result;
+}
+
+async function deriveNoteKey(passphrase) {
+  const response = await fetch('./note.enc.json', { cache: 'no-store' });
+  if (!response.ok) throw new Error('The encrypted note is unavailable.');
+  const bundle = await response.json();
+  if (bundle.version !== 1 || bundle.kdf !== 'PBKDF2-SHA256' || bundle.cipher !== 'AES-256-GCM'
+    || !Number.isInteger(bundle.iterations) || bundle.iterations < 600_000) {
+    throw new Error('The encrypted note has an unsupported format.');
+  }
+  const salt = Uint8Array.from(atob(bundle.salt), character => character.charCodeAt(0));
+  const passwordKey = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(passphrase), 'PBKDF2', false, ['deriveBits'],
+  );
+  const bits = new Uint8Array(await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', hash: 'SHA-256', salt, iterations: bundle.iterations }, passwordKey, 256,
+  ));
+  return btoa(String.fromCharCode(...bits));
 }
 
 function renderSuggestions(questions) {
@@ -97,8 +115,9 @@ $('#unlock-form').addEventListener('submit', async event => {
   $('#unlock-error').hidden = true;
   setBusy(unlockButton, true, 'Unlocking…');
   try {
-    const info = await api('/unlock', { passphrase });
-    sessionPassphrase = passphrase;
+    const noteKey = await deriveNoteKey(passphrase);
+    const info = await api('/unlock', { note_key: noteKey });
+    sessionNoteKey = noteKey;
     $('#passphrase').value = '';
     $('#note-title').textContent = info.title || 'Advisory note';
     renderSuggestions(info.suggested_questions || []);
@@ -123,7 +142,7 @@ $('#question-form').addEventListener('submit', async event => {
   $('#loading-state').hidden = false;
   setBusy(askButton, true, 'Checking…');
   try {
-    const answer = await api('/ask', { passphrase: sessionPassphrase, question });
+    const answer = await api('/ask', { note_key: sessionNoteKey, question });
     renderAnswer(answer);
   } catch (error) {
     $('#answer-error').textContent = error.message;
@@ -135,7 +154,7 @@ $('#question-form').addEventListener('submit', async event => {
 });
 
 $('#lock-button').addEventListener('click', () => {
-  sessionPassphrase = '';
+  sessionNoteKey = '';
   $('#question').value = '';
   $('#answer-content').hidden = true;
   $('#empty-state').hidden = false;
