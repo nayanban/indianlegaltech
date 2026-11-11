@@ -62,8 +62,8 @@ function renderAnswer(data) {
   badge.textContent = labels[data.status] || labels.unavailable;
   badge.className = `status-badge status-${data.status}`;
   $('#evidence-type').textContent = evidenceLabels[data.evidence_type] || evidenceLabels.none;
-  $('#answer-text').textContent = data.answer || 'The note does not establish an answer to this question.';
-  $('#limitations-text').textContent = data.limitations || 'No further limitation was provided.';
+  $('#answer-text').textContent = data.answer || 'No supported answer was found in the selected passages.';
+  $('#limitations-text').textContent = data.limitations || 'No specific gap is identified for the question asked.';
 
   const research = $('#research-list');
   research.replaceChildren();

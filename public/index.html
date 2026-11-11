@@ -53,7 +53,7 @@
             <button id="unlock-button" class="primary-button" type="submit">Open explorer <span aria-hidden="true">↗</span></button>
             <p id="service-status" class="setup-status" role="status" hidden>The answer service is not connected yet. The project overview and code are available below.</p>
             <p id="unlock-error" class="form-error" role="alert" hidden></p>
-            <p class="privacy-note">The note is encrypted. Your passphrase stays in this browser; a key derived from it opens the note in the answer service. Questions and selected passages are sent to an AI model.</p>
+            <p class="privacy-note">The note is encrypted. Your passphrase stays in this browser; a key derived from it opens the note in the answer service. Questions and selected passages are sent to GPT-6 Luna.</p>
           </form>
         </section>
 
@@ -100,7 +100,7 @@
                 <label for="question">Your question</label>
                 <textarea id="question" rows="4" maxlength="1000" placeholder="What does the note establish about…?" required></textarea>
                 <div class="question-actions">
-                  <span>Answers use this note only</span>
+                  <span>Answers use this note only · GPT-6 Luna</span>
                   <button id="ask-button" class="primary-button" type="submit">Ask the note <span aria-hidden="true">↗</span></button>
                 </div>
               </form>
@@ -113,7 +113,7 @@
               <div id="empty-state" class="empty-state">
                 <span class="empty-symbol" aria-hidden="true">↳</span>
                 <h2>Start with a question</h2>
-                <p>The answer will appear here with the note passages it relies on, its limits, and useful follow-up research.</p>
+                <p>The answer will appear here with supporting passages, a precise account of its scope, and useful follow-up research.</p>
               </div>
               <div id="loading-state" class="loading-state" hidden>
                 <span class="loading-mark" aria-hidden="true"></span>
@@ -125,7 +125,7 @@
                 <h2>Answer</h2>
                 <p id="answer-text" class="answer-text"></p>
                 <section class="answer-section" id="limitations-section">
-                  <h3>What this answer cannot establish</h3>
+                  <h3>Scope and limits</h3>
                   <p id="limitations-text"></p>
                 </section>
                 <section class="answer-section" id="research-section">
@@ -145,6 +145,6 @@
       <footer class="footer"><span>© 2026 Nayan Banerjee</span><span>Private note · public methodology</span><a href="https://www.linkedin.com/in/banerjee-nayan/">LinkedIn ↗</a></footer>
     </div>
     <script src="./config.js?v=answer-1"></script>
-    <script type="module" src="./app.js?v=answer-1"></script>
+    <script type="module" src="./app.js?v=answer-2"></script>
   </body>
 </html>

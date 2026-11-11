@@ -10,7 +10,7 @@ That shaped the core requirement. A reader should be able to ask a question in t
 
 ## Defining the answer standard
 
-I specified an answer with four parts: its level of support, the answer itself, its limitations, and further research questions. Supported claims show the note passages behind them. The note's opening preliminary analysis is labelled separately from later market notes so an early hypothesis is not presented as an established market finding.
+I specified an answer with its level of support, a direct response, cited passages, and a concise account of its scope. Further research questions extend the inquiry; when the note only partly answers, or cannot answer, the question, the missing fact is named specifically. The note's opening preliminary analysis is labelled separately from later market notes so an early hypothesis is not presented as an established market finding.
 
 The interface allows free-form questions; it is not a fixed FAQ. The answer service selects likely relevant paragraphs from the private note, sends only those paragraphs and the question to the model, and asks for a structured response. The service checks that returned citation IDs refer to passages actually supplied. That check narrows one failure mode, but the reader must still decide whether a passage truly supports the interpretation.
 
@@ -24,7 +24,7 @@ The passphrase is a practical access method for a small group. It also has a cle
 
 The frontend is plain HTML, CSS, and JavaScript deployed through GitHub Pages. There is no account system or database. The answer service handles decryption, passage selection, model requests, and citation validation. This separation keeps the API key out of the browser and avoids sending the entire note for each question.
 
-The retrieval method is deliberately simple: keyword matching chooses a bounded set of passages. This suits a first pilot, but it can miss a relevant section when a reader uses a synonym or different framing. The answer is therefore limited to the passages retrieved for that request, and the interface tells readers to inspect cited text before relying on a conclusion. The tool does not browse the web or verify that time-sensitive observations remain current.
+The retrieval method is deliberately simple: keyword matching chooses a bounded set of passages. This suits a first pilot, but it can miss a relevant section when a reader uses a synonym or different framing. The answer is therefore limited to the passages retrieved for that request, and the interface tells readers to inspect cited text before relying on a conclusion. The tool does not browse the web or verify that time-sensitive observations remain current. Those standing limits are explained once in the interface instead of making every answer sound incomplete.
 
 ## My role and AI's role
 

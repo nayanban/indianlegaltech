@@ -38,9 +38,21 @@ test('unsupported citations are removed and the answer is downgraded', async () 
     limitations: '', research_questions: [],
   }, note.paragraphs, 'What is missing?');
   assert.equal(answer.status, 'unavailable');
-  assert.equal(answer.answer, 'The note does not establish an answer to this question.');
+  assert.equal(answer.answer, 'I could not find a supported answer in the passages selected from the note.');
   assert.equal(answer.evidence.length, 0);
   assert.equal(answer.research_questions.length, 1);
+});
+
+test('fully supported answers keep the scope section without invented gaps', () => {
+  const answer = validateAnswer({
+    status: 'answered', answer: 'A pilot is proposed.', citations: ['p1'],
+    limitations: 'The note does not report a pilot outcome.',
+    research_questions: ['What happened later?'],
+  }, sampleNote.paragraphs, 'What is proposed?');
+  assert.equal(answer.status, 'answered');
+  assert.equal(answer.limitations, 'The cited passages answer the question as asked; no material gap is identified.');
+  assert.deepEqual(answer.research_questions, ['What happened later?']);
+  assert.deepEqual(answer.evidence.map(item => item.id), ['p1']);
 });
 
 test('passage selection excludes unrelated material and citations to it', () => {
