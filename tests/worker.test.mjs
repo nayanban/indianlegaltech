@@ -50,7 +50,7 @@ test('fully supported answers keep the scope section without invented gaps', () 
     research_questions: ['What happened later?'],
   }, sampleNote.paragraphs, 'What is proposed?');
   assert.equal(answer.status, 'answered');
-  assert.equal(answer.limitations, 'The cited passages answer the question as asked; no material gap is identified.');
+  assert.equal(answer.limitations, 'The cited passages directly address this question.');
   assert.deepEqual(answer.research_questions, ['What happened later?']);
   assert.deepEqual(answer.evidence.map(item => item.id), ['p1']);
 });

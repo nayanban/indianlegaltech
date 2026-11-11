@@ -160,7 +160,7 @@ function validateAnswer(answer, passages, question = '') {
     evidence_type,
     evidence,
     limitations: status === 'answered'
-      ? 'The cited passages answer the question as asked; no material gap is identified.'
+      ? 'The cited passages directly address this question.'
       : (limitations || 'The selected passages do not fully answer this question.').slice(0, 2000),
     research_questions: researchQuestions,
   };
@@ -185,7 +185,7 @@ async function askOpenAI(question, passages, env) {
         'Prefer MARKET NOTE passages when they answer the question. Bring in PRELIMINARY ANALYSIS only when the question asks about proposals or when it adds essential context; do not manufacture a conflict between the two.',
         'Answer the question directly and lead with what the note says. Do not turn a source-backed answer into a general critique of the note.',
         'Use status answered when the selected passages directly answer the question as asked, even though the note has not been independently verified. Use partial only when a material part of that specific question remains unanswered; use unavailable when the selected passages do not support an answer.',
-        'For answered, put an empty string in limitations. The service will show that no material gap is identified for the question asked. Do not invent an adjacent missing fact just to fill this field.',
+        'For answered, put an empty string in limitations. The service will show a concise statement that the cited passages directly address the question. Do not invent an adjacent missing fact just to fill this field.',
         'For partial or unavailable, name the specific missing fact or unresolved part of the question in limitations. Suggest 1–3 concrete research questions; for answered, these may extend the inquiry without implying the answer is incomplete.',
         'If asked what is true now, explain that these passages cannot verify current conditions.',
         'Cite paragraph IDs that directly support each material claim. Do not invent IDs.',
