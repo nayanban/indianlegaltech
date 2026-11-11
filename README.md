@@ -2,7 +2,7 @@
 
 **[Visit the project site](https://nayanban.github.io/indianlegaltech/)** · **[Read how I built it](HOW_IT_WAS_BUILT.md)**
 
-![India Legal Market Note Explorer title card](public/social-preview.png)
+![Current public landing page of the India Legal Market Note Explorer](public/readme-screenshot.jpg)
 
 I prepared an India legal market note as an advisor for a company. This project turns the private note into a question-led interface: authorized readers can ask in their own words, inspect the passages behind an answer, see what the note cannot establish, and identify what to research next.
 
